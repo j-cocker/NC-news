@@ -7,13 +7,8 @@ const convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 };
 
 const formatTableInsert = (data, keys, tableName) => {
-    if (
-        !keys.every((key) => {
-            console.log(`${key} in data?: ${data[0].hasOwnProperty(key)}`);
-            return data[0].hasOwnProperty(key);
-        })
-    ) {
-        console.log("Non matching key in formatter");
+    if (!keys.every((key) => data[0].hasOwnProperty(key))) {
+        console.error("Non matching key in formatter");
         return;
     }
 
