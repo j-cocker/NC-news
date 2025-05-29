@@ -1,3 +1,9 @@
 # NC News Seeding
 
-- Instructions for this sprint can be found at https://l2c.northcoders.com/courses/be/seeding-nc-news
+## Requirements:
+
+-   Add .env.test and .env.development files formatted as follows
+
+```text
+PGDATABASE=<<Your local database here>>
+```
