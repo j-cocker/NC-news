@@ -1,11 +1,23 @@
 const db = require("../connection");
+const { emojiArticleReactData } = require("../data/test-data");
 const { createTables, dropTables } = require("./manage-tables");
 const { formatTableInsert } = require("./utils");
 
-const seed = async ({ topicData, userData, articleData, commentData }) => {
+const seed = async ({
+    topicData,
+    userData,
+    articleData,
+    commentData,
+    emojiData,
+    followData,
+    emojiArticleReactData,
+    userArticleVoteData,
+    userTopicData,
+}) => {
     await dropTables();
     await createTables();
 
+    //Keys
     const topicKeys = ["slug", "description", "img_url"];
     const userKeys = ["username", "name", "avatar_url"];
     const articleKeys = [
@@ -18,7 +30,13 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         "article_img_url",
     ];
     const commentKeys = ["body", "votes", "author", "created_at"];
+    const emojiKeys = ["emoji"];
+    const followKeys = ["username", "follow"];
+    const emojiArticleReactKeys = ["emoji_id", "username", "article_id"];
+    const userArticleVoteKeys = ["username", "article_id", "vote_count"];
+    const userTopicKeys = ["username", "topic"];
 
+    //Queries
     const topicsInsert = formatTableInsert(topicData, topicKeys, "topics");
     const userInsert = formatTableInsert(userData, userKeys, "users");
     const articleInsert = formatTableInsert(
@@ -31,11 +49,38 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         commentKeys,
         "comments"
     );
+    const emojiInsert = formatTableInsert(emojiData, emojiKeys, "emojis");
+    const followInsert = formatTableInsert(
+        followData,
+        followKeys,
+        "user_follows"
+    );
+    const emojiArticleReactInsert = formatTableInsert(
+        emojiArticleReactData,
+        emojiArticleReactKeys,
+        "emoji_article_user"
+    );
+
+    const userArticleVoteInsert = formatTableInsert(
+        userArticleVoteData,
+        userArticleVoteKeys,
+        "user_article_votes"
+    );
+    const userTopicInsert = formatTableInsert(
+        userTopicData,
+        userTopicKeys,
+        "user_topics"
+    );
 
     await db.query(topicsInsert);
     await db.query(userInsert);
     await db.query(articleInsert);
     await db.query(commentInsert);
+    await db.query(emojiInsert);
+    await db.query(followInsert);
+    await db.query(emojiArticleReactInsert);
+    await db.query(userArticleVoteInsert);
+    await db.query(userTopicInsert);
 
     return;
 };

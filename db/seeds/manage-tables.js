@@ -7,7 +7,17 @@ const db = require("../connection");
 // };
 
 exports.dropTables = () => {
-    const tables = ["comments", "articles", "users", "topics"];
+    const tables = [
+        "user_article_votes",
+        "user_topics",
+        "emoji_article_user",
+        "emojis",
+        "user_follows",
+        "comments",
+        "articles",
+        "users",
+        "topics",
+    ];
     let dropTablesQuery = ``;
     for (table of tables) dropTablesQuery += `DROP TABLE IF EXISTS ${table};`;
     return db.query(dropTablesQuery);
@@ -23,7 +33,8 @@ exports.createTables = () => {
     const usersTable = `Create TABLE users (
     username VARCHAR(40) PRIMARY KEY,
     name VARCHAR(40),
-    avatar_url VARCHAR(1000)
+    avatar_url VARCHAR(1000),
+    UNIQUE (username)
     );`;
 
     //articles table: topic ref slug, author ref user username
@@ -47,5 +58,55 @@ exports.createTables = () => {
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`;
 
-    return db.query(topicsTable + usersTable + articlesTable + commentsTable);
+    const userFollowing = `Create TABLE user_follows (
+        user_follow_id SERIAL PRIMARY KEY,
+        username VARCHAR(40) REFERENCES users(username),
+        follow VARCHAR(40) REFERENCES users(username),
+        UNIQUE(username, follow)
+    );`;
+
+    const emojisTable = `Create TABLE emojis (
+        emoji_id SERIAL PRIMARY KEY,
+        emoji VARCHAR(40) NOT NULL
+    );`;
+
+    const emojiArticleReact = `Create TABLE emoji_article_user (
+        emoji_article_user_id SERIAL PRIMARY KEY,
+        emoji_id INT REFERENCES emojis(emoji_id),
+        username VARCHAR(40) REFERENCES users(username),
+        article_id INT REFERENCES articles(article_id),
+        UNIQUE(username, article_id)
+    );`;
+
+    const userTopic = `Create TABLE user_topics (
+        user_topic_id SERIAL PRIMARY KEY,
+        username VARCHAR(40) REFERENCES users(username),
+        topic VARCHAR(40) REFERENCES topics(slug),
+        UNIQUE(username, topic)
+    );`;
+
+    const userVotes = `Create TABLE user_article_votes (
+        user_articles_vote_id SERIAL PRIMARY KEY,
+        username VARCHAR(40) REFERENCES users(username),
+        article_id INT REFERENCES articles(article_id),
+        vote_count INT DEFAULT 0 NOT NULL,
+        UNIQUE(username, article_id),
+        CONSTRAINT vote_range CHECK(vote_count<=1 AND vote_count>=-1)
+    );`;
+
+    return db.query(
+        topicsTable +
+            usersTable +
+            articlesTable +
+            commentsTable +
+            userFollowing +
+            emojisTable +
+            emojiArticleReact +
+            userTopic +
+            userVotes
+    );
 };
+
+//emojisTable +
+//emojiArticleReact +
+//userTopic
