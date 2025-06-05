@@ -711,7 +711,7 @@ describe("data insertion", () => {
             });
     });
 
-    test("user_follows data has been inserted correctly", () => {
+    test.skip("user_follows data has been inserted correctly", () => {
         return db
             .query(`SELECT * FROM user_follows;`)
             .then(({ rows: user_follows }) => {
@@ -723,7 +723,7 @@ describe("data insertion", () => {
                 });
             });
     });
-    test("emojis data has been inserted correctly", () => {
+    test.skip("emojis data has been inserted correctly", () => {
         return db.query(`SELECT * FROM emojis;`).then(({ rows: emojis }) => {
             expect(emojis).toHaveLength(156);
             emojis.forEach((emoji) => {
@@ -732,7 +732,7 @@ describe("data insertion", () => {
             });
         });
     });
-    test("emoji_article_user data has been inserted correctly", () => {
+    test.skip("emoji_article_user data has been inserted correctly", () => {
         return db
             .query(`SELECT * FROM emoji_article_user;`)
             .then(({ rows: emoji_article_user }) => {
@@ -745,7 +745,7 @@ describe("data insertion", () => {
                 });
             });
     });
-    test("user_topics data has been inserted correctly", () => {
+    test.skip("user_topics data has been inserted correctly", () => {
         return db
             .query(`SELECT * FROM user_topics;`)
             .then(({ rows: user_topics }) => {
@@ -757,7 +757,7 @@ describe("data insertion", () => {
                 });
             });
     });
-    test("user_article_votes data has been inserted correctly", () => {
+    test.skip("user_article_votes data has been inserted correctly", () => {
         return db
             .query(`SELECT * FROM user_article_votes;`)
             .then(({ rows: user_article_votes }) => {

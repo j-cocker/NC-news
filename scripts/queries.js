@@ -1,4 +1,4 @@
-const db = require("./connection");
+const db = require("../db/connection");
 
 async function queries() {
     const users = await db.query("SELECT * FROM users;");

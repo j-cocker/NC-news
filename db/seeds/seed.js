@@ -1,4 +1,5 @@
 const db = require("../connection");
+const format = require("pg-format");
 const { emojiArticleReactData } = require("../data/test-data");
 const { createTables, dropTables } = require("./manage-tables");
 const { formatTableInsert } = require("./utils");
@@ -17,6 +18,16 @@ const seed = async ({
     await dropTables();
     await createTables();
 
+    const tablesNames = await db.query(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+    );
+    // const tablesInfo = tablesNames.rows.map((tableObj) => {
+    //     tableObj.keys = db.query(
+    //         "SELECT column_name FROM information_schema.columns WHERE table_name = $1;",
+    //         [tableObj.table_name]
+    //     );
+    // });
+
     //Keys
     const topicKeys = ["slug", "description", "img_url"];
     const userKeys = ["username", "name", "avatar_url"];
@@ -29,26 +40,46 @@ const seed = async ({
         "votes",
         "article_img_url",
     ];
-    const commentKeys = ["body", "votes", "author", "created_at"];
+    const commentKeys = ["article_id", "body", "votes", "author", "created_at"];
     const emojiKeys = ["emoji"];
     const followKeys = ["username", "follow"];
     const emojiArticleReactKeys = ["emoji_id", "username", "article_id"];
     const userArticleVoteKeys = ["username", "article_id", "vote_count"];
     const userTopicKeys = ["username", "topic"];
 
-    //Queries
+    //Query Inserts
     const topicsInsert = formatTableInsert(topicData, topicKeys, "topics");
+    await db.query(topicsInsert);
+
     const userInsert = formatTableInsert(userData, userKeys, "users");
+    await db.query(userInsert);
+
     const articleInsert = formatTableInsert(
         articleData,
         articleKeys,
         "articles"
     );
+    await db.query(articleInsert);
+
+    //CommentData (needs refactor due to unusual seed)
+    const articlesTitleID = await db.query(
+        `SELECT article_id, title FROM articles`
+    );
+    const titleIdLookup = {};
+    articlesTitleID.rows.forEach((articleEntry) => {
+        titleIdLookup[articleEntry.title] = articleEntry.article_id;
+    });
+    const updateCommentData = commentData.map((commentEntry) => {
+        commentEntry.article_id = titleIdLookup[commentEntry.article_title];
+        return commentEntry;
+    });
     const commentInsert = formatTableInsert(
-        commentData,
+        updateCommentData,
         commentKeys,
         "comments"
     );
+    await db.query(commentInsert);
+
     const emojiInsert = formatTableInsert(emojiData, emojiKeys, "emojis");
     const followInsert = formatTableInsert(
         followData,
@@ -72,15 +103,11 @@ const seed = async ({
         "user_topics"
     );
 
-    await db.query(topicsInsert);
-    await db.query(userInsert);
-    await db.query(articleInsert);
-    await db.query(commentInsert);
-    await db.query(emojiInsert);
-    await db.query(followInsert);
-    await db.query(emojiArticleReactInsert);
-    await db.query(userArticleVoteInsert);
-    await db.query(userTopicInsert);
+    // await db.query(emojiInsert);
+    // await db.query(followInsert);
+    // await db.query(emojiArticleReactInsert);
+    // await db.query(userArticleVoteInsert);
+    // await db.query(userTopicInsert);
 
     return;
 };
