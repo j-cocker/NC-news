@@ -14,7 +14,7 @@ afterAll(() => {
     return db.end();
 });
 
-describe("CORE:", () => {
+describe("CORE: endpoints", () => {
     describe("GET /api", () => {
         test("200: Responds with an object detailing the documentation for each endpoint", () => {
             return request(app)
@@ -82,6 +82,36 @@ describe("CORE:", () => {
                         expect(typeof name).toBe("string");
                         expect(typeof avatar_url).toBe("string");
                     });
+                });
+        });
+    });
+});
+describe("CORE: request parameters", () => {
+    describe("GET /api/articles/:article_id", () => {
+        test("200: Responds with an object containing information matching the specified article_id", () => {
+            test_id = 2;
+            return request(app)
+                .get("/api/articles/2") //+ test_id)
+                .expect(200)
+                .then(({ body: { article } }) => {
+                    const {
+                        article_id,
+                        title,
+                        author,
+                        body,
+                        topic,
+                        created_at,
+                        votes,
+                        article_img_url,
+                    } = article;
+                    expect(article_id).toBe(test_id);
+                    expect(typeof title).toBe("string");
+                    expect(typeof author).toBe("string");
+                    expect(typeof body).toBe("string");
+                    expect(typeof topic).toBe("string");
+                    expect(typeof created_at).toBe("string");
+                    expect(typeof votes).toBe("number");
+                    expect(typeof article_img_url).toBe("string");
                 });
         });
     });

@@ -1,33 +1,35 @@
 const express = require("express");
-const db = require("./db/connection");
+//const db = require("./db/connection");
 const endpoints = require("./endpoints.json");
+const {
+    getTopics,
+    getArticles,
+    getUsers,
+    getArticle,
+} = require("./controllers");
 
 const app = express();
-
-//app.use(express.json());
+app.use(express.json());
 
 app.get("/api", (req, res) => {
     res.status(200).send({ endpoints });
 });
 
-app.get("/api/topics", (req, res) => {
-    db.query(`SELECT * FROM topics`).then(({ rows }) => {
-        res.status(200).send({ topics: rows });
-    });
-});
+app.get("/api/topics", getTopics);
+app.get("/api/articles", getArticles);
+app.get("/api/users", getUsers);
+app.get("/api/articles/:article_id", getArticle);
 
-app.get("/api/articles", (req, res) => {
-    db.query(
-        `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id)::INT AS comment_count FROM articles LEFT JOIN comments USING (article_id) GROUP BY articles.article_id ORDER BY articles.created_at DESC`
-    ).then(({ rows }) => {
-        res.status(200).send({ articles: rows });
-    });
-});
+// app.get("/api/articles/:article_id", (req, res) => {
+//     article_id = req.params.article_id;
+//     db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]).then(
+//         ({ rows }) => {
+//             console.log(rows[0]);
+//             res.status(200).send({ article: rows[0] });
+//         }
+//     );
+// });
 
-app.get("/api/users", (req, res) => {
-    db.query(`SELECT * FROM users`).then(({ rows }) => {
-        res.status(200).send({ users: rows });
-    });
-});
+// app.use;
 
 module.exports = app;
