@@ -9,4 +9,5 @@ exports.addArticleComment = async ({ article, username, body }) => {
     );
     const insertComment = await db.query(insertQuery);
     return insertComment.rows[0];
+    
 };
