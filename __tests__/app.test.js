@@ -89,9 +89,9 @@ describe("CORE: endpoints", () => {
 describe("CORE: request parameters", () => {
     describe("GET /api/articles/:article_id", () => {
         test("200: Responds with an object containing information matching the specified article_id", () => {
-            test_id = 2;
+            const test_id = 2;
             return request(app)
-                .get("/api/articles/2") //+ test_id)
+                .get("/api/articles/" + test_id)
                 .expect(200)
                 .then(({ body: { article } }) => {
                     const {
@@ -113,6 +113,89 @@ describe("CORE: request parameters", () => {
                     expect(typeof votes).toBe("number");
                     expect(typeof article_img_url).toBe("string");
                 });
+        });
+        test("400: When given a bad input (i.e. not a number for article_id)", () => {
+            return request(app)
+                .get("/api/articles/mitchArticle")
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("404: When given a good input but no matching article found", () => {
+            return request(app)
+                .get("/api/articles/999")
+                .expect(404)
+                .then(({ body }) => {
+                    //console.log(body);
+                });
+        });
+    });
+    describe("GET /api/articles/:article_id/comments", () => {
+        test("200: Responds with an object with key comments containing array of all comments for given article (when article contains comments)", () => {
+            const test_id = 1;
+            return request(app)
+                .get(`/api/articles/${test_id}/comments`)
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                    expect(comments.length).not.toBe(0);
+                    comments.forEach(
+                        ({
+                            article_id,
+                            comment_id,
+                            author,
+                            body,
+                            votes,
+                            created_at,
+                        }) => {
+                            expect(typeof article_id).toBe("number");
+                            expect(typeof comment_id).toBe("number");
+                            expect(typeof author).toBe("string");
+                            expect(typeof body).toBe("string");
+                            expect(typeof votes).toBe("number");
+                            expect(typeof created_at).toBe("string");
+                        }
+                    );
+                });
+        });
+        test("200: For valid article with no comments, responds with empty comments array", () => {
+            const test_id = 2;
+            return request(app)
+                .get(`/api/articles/${test_id}/comments`)
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                    expect(comments.length).toBe(0);
+                });
+        });
+        test("400: When given a bad input for article_id (e.g. non-number type) ", () => {
+            const test_id = "article";
+            return request(app)
+                .get(`/api/articles/${test_id}/comments`)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("404: When given a good input for article_id, but article matching article_id doesn't exist", () => {
+            const test_id = 200;
+            return request(app)
+                .get(`/api/articles/${test_id}/comments`)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(
+                        `no articles found matching article_id: 200`
+                    );
+                });
+        });
+    });
+    describe("POST: /api/articles/:article_id/comments", () => {
+        test("201: valid user adds comment with body to existing article", () => {
+            const test_id = 2;
+            return request(app)
+                .post(`/api/articles/${test_id}/comments`)
+                .send({ username: "butter_bridge", body: "First!" })
+                .expect(201)
+                .then((body) => {});
         });
     });
 });

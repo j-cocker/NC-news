@@ -6,7 +6,15 @@ const {
     getArticles,
     getUsers,
     getArticle,
+    getArticleComments,
 } = require("./controllers");
+const { postArticleComment } = require("./post-controllers");
+const {
+    handleUnmatchedPath,
+    handleBadQuery,
+    handleCustomError,
+    handleServerError,
+} = require("./error-controllers.js");
 
 const app = express();
 app.use(express.json());
@@ -19,17 +27,15 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/users", getUsers);
 app.get("/api/articles/:article_id", getArticle);
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
-// app.get("/api/articles/:article_id", (req, res) => {
-//     article_id = req.params.article_id;
-//     db.query(`SELECT * FROM articles WHERE article_id = $1`, [article_id]).then(
-//         ({ rows }) => {
-//             console.log(rows[0]);
-//             res.status(200).send({ article: rows[0] });
-//         }
-//     );
-// });
+app.post("/api/articles/:article_id/comments", postArticleComment);
 
-// app.use;
+app.all("/*splat", handleUnmatchedPath);
+
+app.use(handleBadQuery);
+app.use(handleCustomError);
+
+app.use(handleServerError);
 
 module.exports = app;

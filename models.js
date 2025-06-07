@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const format = require("pg-format");
 
 exports.fetchTopics = async () => {
     const topics = await db.query(`SELECT slug, description FROM topics`);
@@ -25,4 +26,23 @@ exports.fetchArticle = async (article_id) => {
         [article_id]
     );
     return article;
+};
+
+exports.fetchArticleComments = async (article_id) => {
+    const comments = await db.query(
+        `SELECT * FROM comments WHERE article_id = $1::INT`,
+        [article_id]
+    );
+    return comments;
+};
+
+exports.fetchValidParam = async ({ param, column, table }) => {
+    const query = format(
+        `SELECT 1 FROM %I WHERE %I = %L`,
+        table,
+        column,
+        param
+    );
+    const exists = await db.query(query);
+    return exists.rows.length > 0;
 };
