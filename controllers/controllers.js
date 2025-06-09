@@ -16,6 +16,16 @@ const checkFetch = ({ rows, table, column, param }) => {
     throw error;
 };
 
+const checkQuery = (inputQueries, validQueries) => {
+    const inputKeys = Object.keys(inputQueries);
+    if (!!inputKeys.every((key) => validQueries.hasOwnProperty(key))) {
+        return;
+    }
+
+    const error = { status: 400, msg: `invalid request` };
+    throw error;
+};
+
 const checkValidParam = async ({ param, column, table }) => {
     const isValid = await fetchValidParam({ param, column, table });
     if (isValid) return;
@@ -27,24 +37,36 @@ const checkValidParam = async ({ param, column, table }) => {
     throw error;
 };
 
-exports.getTopics = async (req, res) => {
+exports.getTopics = async (req, res, next) => {
     try {
         const { rows } = await fetchTopics();
         res.status(200).send({ topics: rows });
-    } catch (err) {}
+    } catch (err) {
+        next(err);
+    }
 };
-exports.getArticles = async (req, res) => {
+exports.getArticles = async (req, res, next) => {
     try {
-        const { sort_by, order } = req.query;
-        const { rows } = await fetchArticles({ sort_by, order });
+        const validQueries = {
+            sort_by: "sort_by",
+            order: "order",
+            topic: "topic",
+        };
+        const { sort_by, order, topic } = req.query;
+        checkQuery(req.query, validQueries);
+        const { rows } = await fetchArticles({ sort_by, order, topic });
         res.status(200).send({ articles: rows });
-    } catch (err) {}
+    } catch (err) {
+        next(err);
+    }
 };
-exports.getUsers = async (req, res) => {
+exports.getUsers = async (req, res, next) => {
     try {
         const { rows } = await fetchUsers();
         res.status(200).send({ users: rows });
-    } catch (err) {}
+    } catch (err) {
+        next(err);
+    }
 };
 
 exports.getArticle = async (req, res, next) => {

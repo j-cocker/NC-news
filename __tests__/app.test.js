@@ -127,7 +127,7 @@ describe("CORE: request parameters", () => {
                 .get("/api/articles/999")
                 .expect(404)
                 .then(({ body }) => {
-                    //console.log(body);
+                    //
                 });
         });
     });
@@ -436,13 +436,109 @@ describe("CORE: request parameters", () => {
 });
 describe("CORE: Queries", () => {
     describe("GET /api/articles?(sorting_queries)", () => {
-        test("200: ", () => {
-            test_id = "mycomment";
+        test("200: responds with articles correctly sorted by specified column (default descending)", () => {
+            function checkDescendingSort(sortColumn) {
+                return request(app)
+                    .get(`/api/articles?sort_by=${sortColumn}`)
+                    .expect(200)
+                    .then(({ body: { articles } }) => {
+                        const sortArticles = [...articles];
+                        if (typeof sortArticles[0][sortColumn] === "number") {
+                            sortArticles.sort(
+                                (article1, article2) =>
+                                    article1[sortColumn] - article2[sortColumn]
+                            );
+                        } else {
+                            sortArticles.sort((article1, article2) => {
+                                if (
+                                    article1[sortColumn] < article2[sortColumn]
+                                ) {
+                                    return -1;
+                                }
+                                if (
+                                    article1[sortColumn] > article2[sortColumn]
+                                ) {
+                                    return 1;
+                                }
+                                return 0;
+                            });
+                        }
+                        expect(articles).toEqual(sortArticles.reverse());
+                    });
+            }
+
+            checkDescendingSort("article_id");
+            return checkDescendingSort("title");
+        });
+        test("200: responds with articles correctly sorted in specified ascending order by column name", () => {
+            function checkAscendingSort(sortColumn) {
+                return request(app)
+                    .get(`/api/articles?sort_by=${sortColumn}&order=asc`)
+                    .expect(200)
+                    .then(({ body: { articles } }) => {
+                        const sortArticles = [...articles];
+                        if (typeof sortArticles[0][sortColumn] === "number") {
+                            sortArticles.sort(
+                                (article1, article2) =>
+                                    article1[sortColumn] - article2[sortColumn]
+                            );
+                        } else {
+                            sortArticles.sort((article1, article2) => {
+                                if (
+                                    article1[sortColumn] < article2[sortColumn]
+                                ) {
+                                    return -1;
+                                }
+                                if (
+                                    article1[sortColumn] > article2[sortColumn]
+                                ) {
+                                    return 1;
+                                }
+                                return 0;
+                            });
+                        }
+                        expect(articles).toEqual(sortArticles);
+                    });
+            }
+
+            checkAscendingSort("article_id");
+            return checkAscendingSort("title");
+
+            //Note: how to sort authors?
+        });
+        test("200: when given topic query with valid value, responds with articles matching specified topic", () => {
+            const sortVal = "mitch";
             return request(app)
-                .get(`/api/articles?sort_by=article_id&order=asc`)
+                .get(`/api/articles?topic=${sortVal}`)
                 .expect(200)
-                .then(({ body }) => {
-                    console.log(body.articles);
+                .then(({ body: { articles } }) => {
+                    articles.forEach(({ topic }) =>
+                        expect(topic).toBe(sortVal)
+                    );
+                });
+        });
+        test("400: bad request when given invalid query parameters", () => {
+            sortVal = "article_id";
+            return request(app)
+                .get(`/api/articles?sort_cols=${sortVal}&order=asc`)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                    expect(msg).toBe(`invalid request`);
+                });
+        });
+        test("400: bad request when given valid query with bad parameters", () => {
+            sortVal = "publish_date";
+            request(app)
+                .get(`/api/articles?sort_by=publish_date&order=asc`)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                    expect(msg).toBe(`invalid request`);
+                });
+            return request(app)
+                .get(`/api/articles?sort_by=article_id&order=ascending`)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                    expect(msg).toBe(`invalid request`);
                 });
         });
     });
