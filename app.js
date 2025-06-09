@@ -7,14 +7,16 @@ const {
     getUsers,
     getArticle,
     getArticleComments,
-} = require("./controllers");
-const { postArticleComment } = require("./post-controllers");
+} = require("./controllers/controllers.js");
+const { postArticleComment } = require("./controllers/post-controllers.js");
+const { patchArticle } = require("./controllers/patch-controllers.js");
+const { deleteComment } = require("./controllers/delete-controllers.js");
 const {
     handleUnmatchedPath,
     handleBadQuery,
     handleCustomError,
     handleServerError,
-} = require("./error-controllers.js");
+} = require("./controllers/error-controllers.js");
 
 const app = express();
 app.use(express.json());
@@ -30,6 +32,10 @@ app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
+
+app.patch("/api/articles/:article_id", patchArticle);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.all("/*splat", handleUnmatchedPath);
 

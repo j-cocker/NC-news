@@ -5,7 +5,7 @@ const {
     fetchArticle,
     fetchArticleComments,
     fetchValidParam,
-} = require("./models");
+} = require("../models/models");
 
 const checkFetch = ({ rows, table, column, param }) => {
     if (rows.length > 0) return;
@@ -35,7 +35,8 @@ exports.getTopics = async (req, res) => {
 };
 exports.getArticles = async (req, res) => {
     try {
-        const { rows } = await fetchArticles();
+        const { sort_by, order } = req.query;
+        const { rows } = await fetchArticles({ sort_by, order });
         res.status(200).send({ articles: rows });
     } catch (err) {}
 };

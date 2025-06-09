@@ -1,19 +1,27 @@
-const db = require("./db/connection");
+const db = require("../db/connection");
 const format = require("pg-format");
+
+const formatOrderBy = ({ sort_by, order }) => {
+    let orderQuery = order ? order : "DESC";
+    let sortQuery = sort_by ? sort_by : "created_at";
+    return format(`ORDER BY articles.%I %s`, sortQuery, orderQuery);
+};
 
 exports.fetchTopics = async () => {
     const topics = await db.query(`SELECT slug, description FROM topics`);
     return topics;
 };
-exports.fetchArticles = async () => {
-    const articles = await db.query(
+exports.fetchArticles = async ({ sort_by, order }) => {
+    const orderClause = formatOrderBy({ sort_by, order });
+    const formatQuery =
         `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, 
             COUNT(comments.article_id)::INT AS comment_count 
             FROM articles 
             LEFT JOIN comments USING (article_id) 
-            GROUP BY articles.article_id 
-            ORDER BY articles.created_at DESC`
-    );
+            GROUP BY articles.article_id ` + orderClause;
+
+    console.log(formatQuery);
+    const articles = await db.query(formatQuery);
     return articles;
 };
 exports.fetchUsers = async () => {

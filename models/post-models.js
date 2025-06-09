@@ -1,4 +1,4 @@
-const db = require("./db/connection");
+const db = require("../db/connection");
 const format = require("pg-format");
 
 exports.addArticleComment = async ({ article, username, body }) => {
@@ -9,5 +9,4 @@ exports.addArticleComment = async ({ article, username, body }) => {
     );
     const insertComment = await db.query(insertQuery);
     return insertComment.rows[0];
-    
 };

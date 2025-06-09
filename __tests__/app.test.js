@@ -195,7 +195,255 @@ describe("CORE: request parameters", () => {
                 .post(`/api/articles/${test_id}/comments`)
                 .send({ username: "butter_bridge", body: "First!" })
                 .expect(201)
-                .then((body) => {});
+                .then(({ body: { comment } }) => {
+                    const {
+                        comment_id,
+                        article_id,
+                        votes,
+                        author,
+                        created_at,
+                    } = comment;
+                    expect(typeof comment_id).toBe("number");
+                    expect(article_id).toBe(2);
+                    expect(comment.body).toBe("First!");
+                    expect(typeof votes).toBe("number");
+                    expect(typeof author).toBe("string");
+                    expect(typeof created_at).toBe("string");
+                });
+        });
+        test("400: request with invalid fields returns invalid request", () => {
+            const test_id = 2;
+            return request(app)
+                .post(`/api/articles/${test_id}/comments`)
+                .send({ badfield: "this is terrible!" })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("400: request with valid fields but invalid values returns invalid request", () => {
+            const test_id = 2;
+            return request(app)
+                .post(`/api/articles/${test_id}/comments`)
+                .send({ username: "", body: 2 })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("400: request create comment on invalid article_id", () => {
+            const test_id = "stringy";
+            return request(app)
+                .post(`/api/articles/${test_id}/comments`)
+                .send({ username: "", body: 2 })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("400: request create comment on a non-existing article_id", () => {
+            const test_id = "stringy";
+            return request(app)
+                .post(`/api/articles/${test_id}/comments`)
+                .send({ username: "", body: 2 })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+    });
+    describe("PATCH: /api/articles/:article_id", () => {
+        test("200: patch success returns newly patched object", () => {
+            const test_id = 1;
+            const newVotes = 100;
+            let previousVotes = 0;
+            request(app)
+                .get(`/api/articles/${test_id}`)
+                .then(({ body: { article } }) => {
+                    previousVotes = article.votes;
+                });
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ inc_votes: newVotes })
+                .expect(200)
+                .then(({ body: { article } }) => {
+                    const {
+                        article_id,
+                        title,
+                        author,
+                        body,
+                        topic,
+                        created_at,
+                        votes,
+                        article_img_url,
+                    } = article;
+                    expect(article_id).toBe(test_id);
+                    expect(typeof title).toBe("string");
+                    expect(typeof author).toBe("string");
+                    expect(typeof body).toBe("string");
+                    expect(typeof topic).toBe("string");
+                    expect(typeof created_at).toBe("string");
+                    expect(votes).toBe(previousVotes + newVotes);
+                    expect(typeof article_img_url).toBe("string");
+                });
+        });
+        test("200: patch success returns newly patched object with correctly incremented votes", () => {
+            const test_id = 1;
+            const newVotes = 100;
+            let previousVotes = 0;
+            request(app)
+                .get(`/api/articles/${test_id}`)
+                .then(({ body: { article } }) => {
+                    previousVotes = article.votes;
+                });
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ inc_votes: newVotes })
+                .expect(200)
+                .then(({ body: { article } }) => {
+                    const {
+                        article_id,
+                        title,
+                        author,
+                        body,
+                        topic,
+                        created_at,
+                        votes,
+                        article_img_url,
+                    } = article;
+                    expect(article_id).toBe(test_id);
+                    expect(typeof title).toBe("string");
+                    expect(typeof author).toBe("string");
+                    expect(typeof body).toBe("string");
+                    expect(typeof topic).toBe("string");
+                    expect(typeof created_at).toBe("string");
+                    expect(votes).toBe(previousVotes + newVotes);
+                    expect(typeof article_img_url).toBe("string");
+                });
+        });
+        test("200: patch success returns newly patched object with correctly decremented votes", () => {
+            const test_id = 1;
+            const newVotes = -200;
+            let previousVotes = 0;
+            request(app)
+                .get(`/api/articles/${test_id}`)
+                .then(({ body: { article } }) => {
+                    previousVotes = article.votes;
+                });
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ inc_votes: newVotes })
+                .expect(200)
+                .then(({ body: { article } }) => {
+                    const {
+                        article_id,
+                        title,
+                        author,
+                        body,
+                        topic,
+                        created_at,
+                        votes,
+                        article_img_url,
+                    } = article;
+                    expect(article_id).toBe(test_id);
+                    expect(typeof title).toBe("string");
+                    expect(typeof author).toBe("string");
+                    expect(typeof body).toBe("string");
+                    expect(typeof topic).toBe("string");
+                    expect(typeof created_at).toBe("string");
+                    expect(votes).toBe(previousVotes + newVotes);
+                    expect(typeof article_img_url).toBe("string");
+                });
+        });
+        test("400: bad request when attempting to patch votes with invalid fields", () => {
+            const test_id = 1;
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ giveMeVotes: 1000 })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("400: bad request when attempting to patch votes with valid fields but invalid values", () => {
+            const test_id = 1;
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ inc_votes: "one hundred" })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+        test("404: not found when attempting to patch votes on non-existing article_id", () => {
+            const test_id = 100;
+
+            return request(app)
+                .patch(`/api/articles/${test_id}`)
+                .send({ inc_votes: "one hundred" })
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`path not found`);
+                });
+        });
+    });
+    describe("DELETE /api/comments/:comment_id", () => {
+        test("204: Return no content when comment successfully deleted", () => {
+            test_id = 2;
+            db.query("SELECT * FROM comments WHERE comment_id = $1", [
+                test_id,
+            ]).then(({ rows }) => {
+                expect(rows.length).toBe(1);
+            });
+            request(app)
+                .delete(`/api/comments/${test_id}`)
+                .expect(204)
+                .then(({ body }) => {
+                    //expect(body.msg).toBe(`path not found`);
+                });
+            return db
+                .query("SELECT * FROM comments WHERE comment_id = $1", [
+                    test_id,
+                ])
+                .then(({ rows }) => {
+                    expect(rows.length).toBe(0);
+                });
+        });
+        test("404: Not found when trying to delete resource that doesn't exist", () => {
+            test_id = 200;
+            return request(app)
+                .delete(`/api/comments/${test_id}`)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`path not found`);
+                });
+        });
+        test("400: bad request when entering an invalid id", () => {
+            test_id = "mycomment";
+            return request(app)
+                .delete(`/api/comments/${test_id}`)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe(`invalid request`);
+                });
+        });
+    });
+});
+describe("CORE: Queries", () => {
+    describe("GET /api/articles?(sorting_queries)", () => {
+        test("200: ", () => {
+            test_id = "mycomment";
+            return request(app)
+                .get(`/api/articles?sort_by=article_id&order=asc`)
+                .expect(200)
+                .then(({ body }) => {
+                    console.log(body.articles);
+                });
         });
     });
 });
