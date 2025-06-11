@@ -541,5 +541,14 @@ describe("CORE: Queries", () => {
                     expect(msg).toBe(`invalid request`);
                 });
         });
+        test("404: Not found when given valid topic query but no articles found", () => {
+            sortVal = "publish_date";
+            return request(app)
+                .get(`/api/articles?topic=paper`)
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                    //expect(msg).toBe(`not found`);
+                });
+        });
     });
 });

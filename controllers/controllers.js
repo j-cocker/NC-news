@@ -55,6 +55,14 @@ exports.getArticles = async (req, res, next) => {
         const { sort_by, order, topic } = req.query;
         checkQuery(req.query, validQueries);
         const { rows } = await fetchArticles({ sort_by, order, topic });
+
+        checkFetch({
+            rows,
+            table: "articles",
+            column: "topic",
+            param: topic,
+        });
+
         res.status(200).send({ articles: rows });
     } catch (err) {
         next(err);
