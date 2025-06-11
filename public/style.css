@@ -1,3 +1,55 @@
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: whitesmoke;
+    background-color: #1a1817;
+}
+
+body {
+    display: grid;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: auto auto 1fr;
+
+    grid-template-areas:
+        "header header"
+        "sidebar nav "
+        "main body";
+}
+
+table,
+th,
+td {
+    border: 1px whitesmoke;
+    border-style: solid;
+}
+
+th {
+    background-color: #a1d5ff;
+}
+
+#sidebar {
+    grid-area: sidebar;
+    background: #a1d5ff;
+    padding: 2rem;
+    margin: 1rem;
+}
+
+#header {
+    grid-area: header;
+    background: rgb(255, 119, 65);
+    padding: 2rem;
+    margin: 1rem;
+}
+
+#nav {
+    grid-area: nav;
+    padding: 2rem;
+    margin: 1rem;
+}
+
+#main {
+    grid-area: content;
+    background: #302c29;
+    padding: 2rem;
+    margin: 1rem;
 }

@@ -7,104 +7,119 @@
         <title>NC-News Documentation</title>
     </head>
     <body>
-        <header>
+        <header id="header">
             <h1>Overview</h1>
             <p>Here's some documentation</p>
         </header>
+        <section id="sidebar">
+            <h2>Contents</h2>
+            <section>
+                <ol>
+                    <a href="#api">API</a>
+                    <br />
+                    <a href="#topics">TOPICS</a
+                    ><br />
+                    <a href="#articles">ARTICLES</a
+                    ><br />
+                    <a href="#users">USERS</a
+                    ><br />
+                </ol>
+            </section>
+        </section>
         <main>
-            <section>
-                <h2>Contents</h2>
+            <section id="main">
                 <section>
-                    <ol>
-                        <a href="url1">/api</a
-                        ><br />
-                        <a href="url2">topics</a
-                        ><br />
-                        <a href="url3">articles</a
-                        ><br />
-                        <a href="url4">users</a
-                        ><br />
-                    </ol>
-                </section>
-            </section>
-            <section>
-                <h2>Topics</h2>
-                
-
-
-
-
-                <p>/api/topics</p>
-                <section>
-                    <h3>GET</h3>
-                    <p>Serves an array of all topics:</p>
-                    <h4>Example Output</h4>
-                    <code
-                        >{"topics": [{ "slug": "football", "description":
-                        "Footie!" }]}
-                    </code>
-                    <!-- <h3>POST</h3>
+                    <h2 id="topics">Topics</h2>
+                    <p>/api/topics</p>
+                    <section>
+                        <h3>GET</h3>
+                        <p>Serves an array of all topics:</p>
+                        <table style="width: 100%">
+                            <tr>
+                                <th style="width: 15%">Path</th>
+                                <th style="width: 15%">Method</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>/api/topics</td>
+                                <td>GET</td>
+                                <td>something something describe here</td>
+                            </tr>
+                            <tr>
+                                <td>/api/topics/{topic_id}</td>
+                                <td>GET</td>
+                                <td>something something describe here</td>
+                            </tr>
+                        </table>
+                        <h4>Example Output</h4>
+                        <code
+                            >{"topics": [{ "slug": "football", "description":
+                            "Footie!" }]}
+                        </code>
+                        <!-- <h3>POST</h3>
                     <p>here's how this works:</p>
                     <h4>Example Output</h4>
                     <code>code snippet</code> -->
+                    </section>
                 </section>
-            </section>
 
-            <section>
-                <h2>Articles</h2>
-                <p>/api/articles</p>
                 <section>
-                    <h3>GET</h3>
-                    <p>
-                        Serves an array of all articles, with the comment count,
-                        sorted from most to least recent.
-                    </p>
-                    <h4>Example Output</h4>
-                    <code
-                        >{ "articles": [ { "title": "Seafood substitutions are
-                        increasing", "topic": "cooking", "author": "weegembump",
-                        "created_at": "2018-05-30T15:59:13.341Z", "votes": 0,
-                        "comment_count": 6 } ] }</code
-                    >
-                    <!-- <h3>POST</h3>
+                    <h2 id="articles">Articles</h2>
+                    <p>/api/articles</p>
+                    <section>
+                        <h3>GET</h3>
+                        <p>
+                            Serves an array of all articles, with the comment
+                            count, sorted from most to least recent.
+                        </p>
+                        <h4>Example Output</h4>
+                        <code
+                            >{ "articles": [ { "title": "Seafood substitutions
+                            are increasing", "topic": "cooking", "author":
+                            "weegembump", "created_at":
+                            "2018-05-30T15:59:13.341Z", "votes": 0,
+                            "comment_count": 6 } ] }</code
+                        >
+                        <!-- <h3>POST</h3>
                     <p>here's how this works:</p>
                     <h4>Example Output</h4>
                     <code>code snippet</code> -->
+                    </section>
                 </section>
-            </section>
 
-            <section>
-                <h2>Users</h2>
-                <p>/api/users</p>
                 <section>
-                    <h3>GET</h3>
-                    <p>Serves an array of all users:</p>
-                    <h4>Example Output</h4>
-                    <code
-                        >{ "users": [ { "username": "butter_bridge", "name":
-                        "jonny", "avatar_url":
-                        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-                        } ] }</code
-                    >
-                    <!-- <h3>POST</h3>
+                    <h2 id="users">Users</h2>
+                    <p>/api/users</p>
+                    <section>
+                        <h3>GET</h3>
+                        <p>Serves an array of all users:</p>
+                        <h4>Example Output</h4>
+                        <code
+                            >{ "users": [ { "username": "butter_bridge", "name":
+                            "jonny", "avatar_url":
+                            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+                            } ] }</code
+                        >
+                        <!-- <h3>POST</h3>
                     <p>here's how this works:</p>
                     <h4>Example Output</h4>
                     <code>code snippet</code> -->
+                    </section>
                 </section>
-            </section>
 
-            <section>
-                <h2>Comments</h2>
-                <p>/api/comments</p>
                 <section>
-                    <h3>GET</h3>
-                    <p>here's how this works:</p>
-                    <h4>Example Output</h4>
-                    <code>code snippet</code>
-                    <!-- <h3>POST</h3>
+                    <h2 id="comments">Comments</h2>
+                    <p>/api/comments</p>
+                    <section>
+                        <h3>GET</h3>
+                        <p>here's how this works:</p>
+                        <h4>Example Output</h4>
+                        <code>code snippet</code>
+                        <!-- <h3>POST</h3>
                     <p>here's how this works:</p>
                     <h4>Example Output</h4>
                     <code>code snippet</code> -->
+                    </section>
                 </section>
             </section>
         </main>
