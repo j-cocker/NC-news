@@ -7,3 +7,5 @@
 ```text
 PGDATABASE=<<Your local database here>>
 ```
+
+Currently hosted [here](https://nc-news-s52t.onrender.com/api)
